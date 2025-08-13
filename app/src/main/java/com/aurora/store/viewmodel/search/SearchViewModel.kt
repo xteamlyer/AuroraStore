@@ -48,13 +48,13 @@ import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchResultViewModel @Inject constructor(
+class SearchViewModel @Inject constructor(
     private val authProvider: AuthProvider,
     private val searchHelper: SearchHelper,
     private val webSearchHelper: WebSearchHelper
 ) : ViewModel() {
 
-    private val TAG = SearchResultViewModel::class.java.simpleName
+    private val TAG = SearchViewModel::class.java.simpleName
 
     val liveData: MutableLiveData<ViewState> = MutableLiveData()
 
@@ -62,6 +62,9 @@ class SearchResultViewModel @Inject constructor(
 
     private val contract: SearchContract
         get() = if (authProvider.isAnonymous) webSearchHelper else searchHelper
+
+    private val _suggestions = MutableStateFlow<List<String>>(emptyList())
+    val suggestions = _suggestions.asStateFlow()
 
     private val _apps = MutableStateFlow<PagingData<App>>(PagingData.empty())
     val apps = _apps.asStateFlow()
@@ -117,6 +120,12 @@ class SearchResultViewModel @Inject constructor(
             .cachedIn(viewModelScope)
             .onEach { _apps.value = it }
             .launchIn(viewModelScope)
+    }
+
+    fun fetchSuggestions(query: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _suggestions.value = contract.searchSuggestions(query).map { it.title }
+        }
     }
 
     @Synchronized
