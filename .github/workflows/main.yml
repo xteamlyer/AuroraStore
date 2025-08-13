@@ -40,9 +40,9 @@ jobs:
       run: |
         ./gradlew assembleVanillaNightly
 
-    - name: Build huawei
-      run: |
-        ./gradlew assembleHuaweiRelease
+    # - name: Build huawei
+    #   run: |
+    #     ./gradlew assembleHuaweiRelease
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@main
