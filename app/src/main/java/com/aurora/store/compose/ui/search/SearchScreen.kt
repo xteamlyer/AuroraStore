@@ -5,12 +5,17 @@
 
 package com.aurora.store.compose.ui.search
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.DockedSearchBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -19,9 +24,14 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,12 +43,13 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.LocalAsyncImagePreviewHandler
+import com.aurora.gplayapi.SearchSuggestEntry
 import com.aurora.gplayapi.data.models.App
 import com.aurora.store.R
 import com.aurora.store.compose.composables.ErrorComposable
 import com.aurora.store.compose.composables.ProgressComposable
+import com.aurora.store.compose.composables.SearchSuggestionComposable
 import com.aurora.store.compose.composables.app.AppListComposable
-import com.aurora.store.compose.navigation.Screen
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.coilPreviewProvider
 import com.aurora.store.compose.ui.details.AppDetailsScreen
@@ -55,17 +66,24 @@ fun SearchScreen(onNavigateUp: () -> Unit, viewModel: SearchViewModel = hiltView
     ScreenContent(
         suggestions = suggestions,
         results = results,
-        onNavigateUp = onNavigateUp
+        onNavigateUp = onNavigateUp,
+        onSearch = { query -> viewModel.newSearch(query) },
+        onFetchSuggestions = { query -> viewModel.fetchSuggestions(query) }
     )
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 private fun ScreenContent(
-    suggestions: List<String> = emptyList(),
+    suggestions: List<SearchSuggestEntry> = emptyList(),
     results: LazyPagingItems<App> = flowOf(PagingData.empty<App>()).collectAsLazyPagingItems(),
-    onNavigateUp: () -> Unit = {}
+    onNavigateUp: () -> Unit = {},
+    onFetchSuggestions: (String) -> Unit = {},
+    onSearch: (String) -> Unit = {}
 ) {
+    var currentQuery by rememberSaveable { mutableStateOf("") }
+    var isExpanded by rememberSaveable { mutableStateOf(true) }
+
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator<String>()
     val coroutineScope = rememberCoroutineScope()
 
@@ -75,13 +93,65 @@ private fun ScreenContent(
         }
     }
 
+    fun onRequestSuggestions(query: String) {
+        currentQuery = query.trim()
+        onFetchSuggestions(query.trim())
+    }
+
+    fun onRequestSearch(query: String) {
+        currentQuery = query.trim()
+        isExpanded = false
+        onSearch(query.trim())
+    }
+
+    @Composable
+    fun SearchBar() {
+        DockedSearchBar(
+            expanded = isExpanded,
+            onExpandedChange = { expanded -> isExpanded = expanded },
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = currentQuery,
+                    onQueryChange = { query -> onRequestSuggestions(query) },
+                    onSearch = { query -> onRequestSearch(query) },
+                    expanded = isExpanded,
+                    onExpandedChange = { expanded -> isExpanded = expanded },
+                    leadingIcon = {
+                        IconButton(onClick = onNavigateUp) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_back),
+                                contentDescription = stringResource(R.string.action_back)
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        if (currentQuery.isNotBlank()) {
+                            IconButton(onClick = { currentQuery = "" }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_cancel),
+                                    contentDescription = stringResource(R.string.action_clear)
+                                )
+                            }
+                        }
+                    },
+                    placeholder = { Text(text = stringResource(R.string.search_hint)) }
+                )
+            }
+        ) {
+            suggestions.forEach { suggestion ->
+                SearchSuggestionComposable(
+                    searchSuggestEntry = suggestion,
+                    onClick = { query -> onRequestSearch(query) }
+                )
+            }
+        }
+    }
+
     @Composable
     fun ListPane() {
         Scaffold(
             topBar = {
-                Box(modifier = Modifier.fillMaxWidth()) {
-
-                }
+                TopAppBar(title = { SearchBar() })
             }
         ) { paddingValues ->
             when (results.loadState.refresh) {

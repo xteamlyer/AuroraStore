@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.aurora.gplayapi.SearchSuggestEntry
 import com.aurora.gplayapi.data.models.App
 import com.aurora.gplayapi.data.models.StreamBundle
 import com.aurora.gplayapi.data.models.StreamCluster
@@ -63,7 +64,7 @@ class SearchViewModel @Inject constructor(
     private val contract: SearchContract
         get() = if (authProvider.isAnonymous) webSearchHelper else searchHelper
 
-    private val _suggestions = MutableStateFlow<List<String>>(emptyList())
+    private val _suggestions = MutableStateFlow<List<SearchSuggestEntry>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
 
     private val _apps = MutableStateFlow<PagingData<App>>(PagingData.empty())
@@ -124,7 +125,7 @@ class SearchViewModel @Inject constructor(
 
     fun fetchSuggestions(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _suggestions.value = contract.searchSuggestions(query).map { it.title }
+            _suggestions.value = contract.searchSuggestions(query)
         }
     }
 
