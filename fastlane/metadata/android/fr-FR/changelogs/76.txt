@@ -1,9 +1,9 @@
-• Reconstruction de l'interface plus moderne avec Jetpack Compose
-• Prise en charge de comptes Google multiples
-• Évaluations utilisateur dans l'écran de détails de l'appli
-• Verrouillage optionnel par biométrie ou identifiants de l'appareil
-• Installation en un clic pour les favoris et flux d'achat pour les applis payantes
-• Notifications retravaillées avec des résumés get des paramètres groupés
-• Écran de mise à jour revu ; les mises à jour intégrées sont maintenant affichées dans la liste
-• Téléchargement, installation et prise en charge de l'installer microG plus fiables
-• Corrections de bugs et mises à jour de traductions
+• Interface entièrement repensée avec Jetpack Compose
+• Prise en charge de plusieurs comptes Google
+• Avis des utilisateurs sur l'écran de présentation de l'application
+• Verrouillage facultatif de l'application via la biométrie ou les identifiants de l'appareil
+• Installation en un clic pour les favoris et processus d’achat pour les applications payantes
+• Notifications remaniées avec des résumés groupés et des paramètres
+• Écran des mises à jour repensé ; les mises à jour automatiques apparaissent désormais dans la liste
+• Téléchargements et installations plus fiables et prise en charge du programme d’installation microG
+• Corrections de bugs et mises à jour des traductions
