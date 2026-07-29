@@ -631,4 +631,5 @@
     <string name="manual_download_select_version">Sélectionnez une version</string>
     <string name="manual_download_no_versions">Aucune version connue n\'a été trouvée</string>
     <string name="manual_download_availability_warning">Certaines versions peuvent ne pas être disponibles au téléchargement ou être incompatibles avec votre appareil.</string>
+    <string name="details_more_certificate_hash">Hash du certificat</string>
 </resources>
