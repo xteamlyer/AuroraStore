@@ -637,4 +637,5 @@
     <string name="manual_download_select_version">Вибрати версію</string>
     <string name="manual_download_no_versions">Відомих версій не знайдено</string>
     <string name="manual_download_availability_warning">Деякі версії можуть бути недоступними для завантаження або несумісними з вашим пристроєм.</string>
+    <string name="details_more_certificate_hash">Хеш сертифіката</string>
 </resources>
