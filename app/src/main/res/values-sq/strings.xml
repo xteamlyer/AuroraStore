@@ -612,8 +612,8 @@
     <string name="remove_dispenser_title">Hiq shpërndarësit?</string>
     <string name="remove_dispenser_summary">Dëshironi ta hiqni shpërndarësin \"<xliff:g id="url">%1$s</xliff:g>\"?</string>
     <string name="account_exists">Llogaria është shtuar tashmë</string>
-    <string name="action_update_anyway">Përditëso gjithsesi</string>
-    <string name="exodus_report_history">Historiku i versioneve</string>
+    <string name="action_update_anyway">Përditësoje sido qoftë</string>
+    <string name="exodus_report_history">Historik versionesh</string>
     <string name="exodus_history_version">%1$s (%2$s)</string>
     <string name="exodus_history_subtitle">%1$s • %2$d gjurmues</string>
     <string name="exodus_latest">Më i fundit</string>
