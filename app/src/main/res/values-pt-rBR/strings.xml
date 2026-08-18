@@ -169,7 +169,7 @@
     <string name="about_xda_summary">Veja a publicação da Aurora Store no XDA para discussões ou sugestões.</string>
     <string name="about_telegram_summary">Junte-se ao grupo de suporte da Aurora para discussões ou sugestões.</string>
     <string name="about_paypal_summary">Doar via PayPal</string>
-    <string name="about_libera_summary">Torne-se um patrono no Liberapay</string>
+    <string name="about_libera_summary">Torne-se um apoiador no Liberapay</string>
     <string name="about_gitlab_summary">Baixe o código-fonte da Aurora Store do Aurora OSS no GitLab.</string>
     <string name="about_fdroid_summary">Instale a Aurora Store pelo F-Droid.</string>
     <string name="about_bitcoin_eth_summary">Doar via Ethereum (ETH)</string>
