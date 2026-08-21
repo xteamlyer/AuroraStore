@@ -114,7 +114,6 @@ class SessionInstaller @Inject constructor(
             get() = InstallerInfo(
                 id = 0,
                 installer = Installer.SESSION,
-                packageNames = BuildType.PACKAGE_NAMES,
                 installerPackageNames = BuildType.PACKAGE_NAMES,
                 title = R.string.pref_install_mode_session,
                 subtitle = R.string.session_installer_subtitle,

@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
 import com.aurora.Constants.PACKAGE_NAME_GMS
 import com.aurora.extensions.TAG
@@ -22,7 +23,6 @@ import com.aurora.extensions.isSAndAbove
 import com.aurora.extensions.toast
 import com.aurora.store.BuildConfig
 import com.aurora.store.R
-import com.aurora.store.data.installer.ShizukuInstaller.Companion.SHIZUKU_PACKAGE_NAME
 import com.aurora.store.data.installer.base.IInstaller
 import com.aurora.store.data.model.Installer
 import com.aurora.store.data.model.InstallerInfo
@@ -35,6 +35,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import rikka.shizuku.Shizuku
+import rikka.shizuku.ShizukuProvider
 import rikka.sui.Sui
 
 @Singleton
@@ -69,7 +70,15 @@ class AppInstaller @Inject constructor(
             if (hasRootAccess()) RootInstaller.installerInfo else null,
             if (hasAuroraService(context)) ServiceInstaller.installerInfo else null,
             if (hasAppManager(context)) AMInstaller.installerInfo else null,
-            if (hasShizukuOrSui(context)) ShizukuInstaller.installerInfo else null,
+            if (hasShizukuOrSui(context)) {
+                // Name whichever fork is serving it, rather than crediting them all to Shizuku
+                ShizukuInstaller.installerInfo.copy(
+                    provider = ShizukuInstaller.getProviderPackage(context)
+                        ?.let { PackageUtil.getPackageLabel(context, it) }
+                )
+            } else {
+                null
+            },
             if (hasMicroGCompanion(context)) MicroGInstaller.installerInfo else null
         )
 
@@ -121,7 +130,8 @@ class AppInstaller @Inject constructor(
                 // We cannot check if AppManager has ability to auto-update
                 Installer.AM -> false
 
-                Installer.SHIZUKU -> isOAndAbove && hasShizukuOrSui(context) && hasShizukuPerm()
+                Installer.SHIZUKU ->
+                    isOAndAbove && hasShizukuOrSui(context) && hasShizukuPerm(context)
 
                 Installer.MICROG -> false
             }
@@ -161,15 +171,31 @@ class AppInstaller @Inject constructor(
             PackageUtil.isInstalled(context, AMInstaller.AM_PACKAGE_NAME) or
                 PackageUtil.isInstalled(context, AMInstaller.AM_DEBUG_PACKAGE_NAME)
 
+        /**
+         * Whether anything here can serve the Shizuku installer — the official app, any fork of
+         * it, or Sui. Answers "installed", not "running", so a server that is present but not
+         * started keeps the installer visible instead of the option quietly disappearing.
+         */
         fun hasShizukuOrSui(context: Context): Boolean = isOAndAbove &&
-            (PackageUtil.isInstalled(context, SHIZUKU_PACKAGE_NAME) || Sui.isSui())
+            (ShizukuInstaller.getProviderPackage(context) != null || Sui.isSui())
 
         // Shizuku.checkSelfPermission() throws when the binder is not alive (Shizuku
         // disabled/not running), so guard on pingBinder() and swallow any failure to let
         // callers fall back gracefully instead of crashing.
-        fun hasShizukuPerm(): Boolean = try {
+        /**
+         * Whether we hold the Shizuku permission, asking the platform as well as Shizuku itself:
+         * Shizuku's own answer is per-client state settled at attach time, and a server that
+         * grants without pushing the result back leaves it stale for the rest of the process.
+         *
+         * checkSelfPermission() throws when the binder is not alive, hence the pingBinder guard.
+         */
+        fun hasShizukuPerm(context: Context): Boolean = try {
             Shizuku.pingBinder() &&
-                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+                (
+                    Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(context, ShizukuProvider.PERMISSION) ==
+                        PackageManager.PERMISSION_GRANTED
+                    )
         } catch (_: Exception) {
             false
         }
@@ -218,7 +244,7 @@ class AppInstaller @Inject constructor(
 
             Installer.AM -> if (hasAppManager(context)) amInstaller else defaultInstaller
 
-            Installer.SHIZUKU -> if (hasShizukuOrSui(context) && hasShizukuPerm()) {
+            Installer.SHIZUKU -> if (hasShizukuOrSui(context) && hasShizukuPerm(context)) {
                 shizukuInstaller
             } else {
                 defaultInstaller

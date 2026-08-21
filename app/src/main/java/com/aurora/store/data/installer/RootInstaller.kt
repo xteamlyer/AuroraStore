@@ -13,7 +13,6 @@ import com.aurora.store.AuroraApp
 import com.aurora.store.R
 import com.aurora.store.data.event.InstallerEvent
 import com.aurora.store.data.installer.base.InstallerBase
-import com.aurora.store.data.model.BuildType
 import com.aurora.store.data.model.Installer
 import com.aurora.store.data.model.InstallerInfo
 import com.aurora.store.data.room.download.Download
@@ -36,7 +35,6 @@ class RootInstaller @Inject constructor(
             get() = InstallerInfo(
                 id = 2,
                 installer = Installer.ROOT,
-                packageNames = BuildType.PACKAGE_NAMES,
                 installerPackageNames = listOf(PLAY_PACKAGE_NAME),
                 title = R.string.pref_install_mode_root,
                 subtitle = R.string.root_installer_subtitle,

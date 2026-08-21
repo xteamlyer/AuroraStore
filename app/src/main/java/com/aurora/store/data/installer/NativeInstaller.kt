@@ -35,7 +35,6 @@ class NativeInstaller @Inject constructor(
             get() = InstallerInfo(
                 id = 1,
                 installer = Installer.NATIVE,
-                packageNames = BuildType.PACKAGE_NAMES,
                 installerPackageNames = BuildType.PACKAGE_NAMES,
                 title = R.string.pref_install_mode_native,
                 subtitle = R.string.native_installer_subtitle,

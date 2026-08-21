@@ -18,7 +18,6 @@ import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
-import com.aurora.extensions.isPAndAbove
 import com.aurora.extensions.setAppTheme
 import com.aurora.store.data.event.EventFlow
 import com.aurora.store.data.helper.DownloadHelper
@@ -33,7 +32,6 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.MainScope
 import okhttp3.OkHttpClient
-import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 @HiltAndroidApp
 class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Factory {
@@ -78,9 +76,6 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
             Preferences.dynamicColorsDefault
         )
         if (dynamicColors) DynamicColors.applyToActivitiesIfAvailable(this)
-
-        // Required for Shizuku installer
-        if (isPAndAbove) HiddenApiBypass.addHiddenApiExemptions("I", "L")
 
         // Create Notification Channels
         NotificationUtil.createNotificationChannel(this)

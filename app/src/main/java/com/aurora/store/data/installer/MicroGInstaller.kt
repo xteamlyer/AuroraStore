@@ -32,7 +32,6 @@ class MicroGInstaller @Inject constructor(
             get() = InstallerInfo(
                 id = 6,
                 installer = Installer.MICROG,
-                packageNames = listOf(PACKAGE_NAME_PLAY_STORE),
                 installerPackageNames = listOf(PACKAGE_NAME_PLAY_STORE),
                 title = R.string.pref_install_mode_microg,
                 subtitle = R.string.microg_installer_subtitle,

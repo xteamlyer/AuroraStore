@@ -36,7 +36,6 @@ class AMInstaller @Inject constructor(
             get() = InstallerInfo(
                 id = 4,
                 installer = Installer.AM,
-                packageNames = listOf(AM_PACKAGE_NAME, AM_DEBUG_PACKAGE_NAME),
                 installerPackageNames = listOf(AM_PACKAGE_NAME, AM_DEBUG_PACKAGE_NAME),
                 title = R.string.pref_install_mode_am,
                 subtitle = R.string.am_installer_subtitle,

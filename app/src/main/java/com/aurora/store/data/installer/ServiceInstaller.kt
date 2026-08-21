@@ -54,7 +54,6 @@ class ServiceInstaller @Inject constructor(
             get() = InstallerInfo(
                 id = 3,
                 installer = Installer.SERVICE,
-                packageNames = listOf(PRIVILEGED_EXTENSION_PACKAGE_NAME),
                 installerPackageNames = listOf(PRIVILEGED_EXTENSION_PACKAGE_NAME),
                 title = R.string.pref_install_mode_services,
                 subtitle = R.string.services_installer_subtitle,

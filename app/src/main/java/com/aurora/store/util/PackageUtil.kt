@@ -289,6 +289,12 @@ object PackageUtil {
         null
     }
 
+    /** A package's own display label, or null when it is not installed. */
+    fun getPackageLabel(context: Context, packageName: String): String? = runCatching {
+        context.packageManager.getApplicationInfo(packageName, 0)
+            .loadLabel(context.packageManager).toString()
+    }.getOrNull()
+
     @Throws(Exception::class)
     fun getPackageInfo(context: Context, packageName: String, flags: Int = 0): PackageInfo =
         if (isTAndAbove) {

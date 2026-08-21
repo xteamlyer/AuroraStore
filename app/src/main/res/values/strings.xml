@@ -200,6 +200,8 @@
     <string name="installer_root_unavailable">No root access. Grant it or change the installer.</string>
     <string name="installer_shizuku_unavailable">Shizuku is not installed or set up properly.</string>
     <string name="installer_fallback_session">Chosen installer is unavailable, using the default installer instead.</string>
+    <!-- Installer description, then the app providing it, e.g. "… · Served by Shevery" -->
+    <string name="installer_provider">%1$s · Served by %2$s</string>
 
     <!-- Security -->
     <string name="title_security">Security</string>
