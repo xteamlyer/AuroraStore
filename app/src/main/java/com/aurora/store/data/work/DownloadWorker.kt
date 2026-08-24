@@ -40,6 +40,7 @@ import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.data.model.Algorithm
 import com.aurora.store.data.model.DownloadInfo
 import com.aurora.store.data.model.DownloadStatus
+import com.aurora.store.data.model.DownloadStatus.Companion.installerStates
 import com.aurora.store.data.network.HttpClient
 import com.aurora.store.data.providers.AuthProvider
 import com.aurora.store.data.providers.GoogleAccountTokenProvider
@@ -138,6 +139,14 @@ class DownloadWorker @AssistedInject constructor(
             purchaseHelper = resolvePurchaseHelper(download.packageName)
         } catch (exception: Exception) {
             return onFailure(exception)
+        }
+
+        // Workers only ever start from a QUEUED row, so anything past it was committed by an
+        // earlier run that never got to report success — as happens on a self-update, where
+        // install() kills this process. Re-installing here would just kill the app again.
+        if (download.status in installerStates) {
+            Log.i(TAG, "${download.packageName} is already ${download.status}, nothing to do")
+            return Result.success()
         }
 
         // The icon only decorates the progress notification. Fetching it is best-effort: a

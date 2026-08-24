@@ -95,6 +95,9 @@ class DownloadHelper @Inject constructor(
      * the row, so on the next launch it would otherwise show as installing forever. Reaching
      * INSTALLING means the install was already committed, so mark it installed; if it actually
      * failed, the periodic update check re-offers and re-enqueues it.
+     *
+     * The worker is cancelled too: it never got to return a result either, so WorkManager would
+     * keep re-running it on every launch, re-installing the app over itself each time.
      */
     private suspend fun finalizeStaleSelfUpdate(downloads: List<Download>) {
         downloads.firstOrNull {
@@ -102,6 +105,8 @@ class DownloadHelper @Inject constructor(
         }?.let {
             Log.i(TAG, "Finalizing stale self-update install for ${it.packageName}")
             downloadDao.updateStatus(it.packageName, DownloadStatus.INSTALLED)
+            WorkManager.getInstance(context)
+                .cancelAllWorkByTag("$PACKAGE_NAME:${it.packageName}")
         }
     }
 

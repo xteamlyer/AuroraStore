@@ -31,5 +31,8 @@ enum class DownloadStatus(@StringRes val localized: Int) {
          * concurrent workers can't clobber the shared foreground/progress notification.
          */
         val processing = setOf(PURCHASING, DOWNLOADING, VERIFYING)
+
+        /** States reached only once the download was handed off to the installer. */
+        val installerStates = setOf(INSTALLING, INSTALLED)
     }
 }
